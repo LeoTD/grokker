@@ -1,37 +1,24 @@
 import type { NodeTypes } from '@xyflow/react';
 
-import { PositionLoggerNode } from './PositionLoggerNode';
 import { AppNode } from './types';
-import TextUpdaterNode from './TextUpdaterNode';
+import AITransformationNode from './AITransformationNode';
 
 export const initialNodes: AppNode[] = [
   {
     id: 'a',
-    type: 'text-updater',
+    type: 'ai-transform',
     position: { x: 0, y: 0 },
-    data: { label: 'wire' } 
+    data: { nodeName: 'This is a Dummy AI node', contentText: 'This is a description of what this node asks {your favorite LLM} to do.' } 
   },
   {
     id: 'b',
-    type: 'position-logger',
-    position: { x: -100, y: 100 },
-    data: { label: 'drag me!' },
-  },
-  {
-    id: 'c',
+    type: 'ai-transform',
     position: { x: 100, y: 100 },
-    data: { label: 'your ideas' }
-  },
-  {
-    id: 'd',
-    type: 'output',
-    position: { x: 0, y: 200 },
-    data: { label: 'with React Flow' },
+    data: { nodeName: 'This is a Dummy AI node', contentText: 'This is a description of what this node asks {your favorite LLM} to do.' } 
   },
 ];
 
 export const nodeTypes = {
-  'position-logger': PositionLoggerNode,
-  'text-updater': TextUpdaterNode,
+  'ai-transform': AITransformationNode
   // Add any of your custom nodes here!
 } satisfies NodeTypes;

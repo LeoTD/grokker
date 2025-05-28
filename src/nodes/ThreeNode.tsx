@@ -47,8 +47,8 @@ const ThreeNode: React.FC<ThreeNodeProps> = ({
   nodeName,
   contentText,
   colors = {}, // Default to an empty object if no colors are provided
-  width = '360px', // Medium size, landscape phone-like width
-  height = '200px', // Medium size, landscape phone-like height
+  width = '300px', // Medium size, landscape phone-like width
+  height = '150px', // Medium size, landscape phone-like height
   borderRadius = '8px', // Rounded corners for a modern look
   fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   customRootStyle,
@@ -103,8 +103,9 @@ const ThreeNode: React.FC<ThreeNodeProps> = ({
 
   const nameStyle: React.CSSProperties = {
     textAlign: 'center',
-    fontWeight: '600', // Semi-bold for emphasis
-    padding: '10px 12px', // Adequate padding
+    fontWeight: '500', // Semi-bold for emphasis
+    padding: '5px 10px', // Adequate padding
+    fontSize: '12px', // 14px/16=0.875em
     backgroundColor: C.nameBackground,
     color: C.nameText,
     borderBottom: `1px solid ${C.border}`, // Separator line
@@ -133,6 +134,7 @@ const ThreeNode: React.FC<ThreeNodeProps> = ({
     // Default alignment for items *within* a blank section (e.g., port placeholders)
     alignItems: 'center',
     justifyContent: 'flex-start',
+    fontSize: '8px', // 14px/16=0.875em
   };
 
   const leftSectionStyle: React.CSSProperties = {
@@ -148,7 +150,7 @@ const ThreeNode: React.FC<ThreeNodeProps> = ({
     flex: centerSectionFlex,
     backgroundColor: C.centerSectionBackground,
     color: C.centerSectionText,
-    padding: '12px 15px', // Slightly more padding for content
+    padding: '5px 10px', // Slightly more padding for content
     overflowY: 'auto',   // Enable vertical scrolling for long content
     alignItems: 'stretch', // Make children (like the text div) fill the width
     borderLeft: `1px solid ${C.border}`,
