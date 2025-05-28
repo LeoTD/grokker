@@ -4,16 +4,16 @@ import ThreeNode from './ThreeNode';
  
 const handleStyle = { left: 10 };
  
-function TextUpdaterNode({ data, isConnectable }) {
+function AITransformationNode({ data, isConnectable }) {
 //  const onChange = useCallback((evt) => {
 //    console.log(evt.target.value);
 //  }, []);
  
   return (
-    <div className="text-updater-node">
+    <div className="ai-transform-node">
       <ThreeNode
-        nodeName="NodeName"
-        contentText="This is the node's content block."
+        nodeName="Dummy AI Node"
+        contentText="This is a description of what this node asks {your favorite LLM} to do."
       />
       <Handle
         type="target"
@@ -37,7 +37,7 @@ function TextUpdaterNode({ data, isConnectable }) {
   );
 }
  
-export default TextUpdaterNode;
+export default AITransformationNode;
 
 
 /* original text box div:
