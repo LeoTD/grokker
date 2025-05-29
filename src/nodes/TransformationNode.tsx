@@ -11,7 +11,7 @@ const handleLabelStyle = {
  // border: '1px solid #ccc',
 };
 
-function AITransformationNode({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string, contentText: string }>>) {
+function TransformationNode({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string, contentText: string }>>) {
 //  const onChange = useCallback((evt) => {
 //    console.log(evt.target.value);
 //  }, []);
@@ -29,7 +29,7 @@ function AITransformationNode({ id, data, isConnectable }: NodeProps<Node<{ node
           background: '#f0f4f8', // Light grayish blue
           text: '#2d3748',       // Darker gray
           border: '#cbd5e0',     // Medium gray border
-          nameBackground: '#f56ebd', // Slightly different background for name
+          nameBackground: '#ffd35c', // Slightly different background for name
           centerSectionText: '#4a5568', // Specific text color for content
         }}
       />
@@ -114,7 +114,7 @@ function AITransformationNode({ id, data, isConnectable }: NodeProps<Node<{ node
   );
 }
  
-export default AITransformationNode;
+export default TransformationNode;
 
 
 /* original text box div:
