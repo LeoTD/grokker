@@ -1,10 +1,9 @@
-import { NodeResizeControl } from '@xyflow/react';
 import React from 'react';
 
 /**
- * Defines the configurable color properties for the BaseNode.
+ * Defines the configurable color properties for the ThreeNode.
  */
-interface BaseNodeColors {
+interface ThreeNodeColors {
     background?: string; // Overall node background
     text?: string;       // Default text color for the node (e.g., for Name if not specified)
     border?: string;     // Border color for the node
@@ -12,40 +11,52 @@ interface BaseNodeColors {
     nameBackground?: string; // Background for the name area
     nameText?: string;       // Text color for the name
 
-    bottomSectionBackground?: string; // Background for the subComponent section
-    bottomSectionText?: string;       // Text color for the content in the center section
+    leftSectionBackground?: string;  // Background for the left blank section
+    centerSectionBackground?: string;// Background for the center text section
+    centerSectionText?: string;      // Text color for the content in the center section
+    rightSectionBackground?: string; // Background for the right blank section
 }
 
 /**
- * Props for the BaseNode component.
+ * Props for the ThreeNode component.
  */
-interface BaseNodeProps {
-    id: string;
+interface ThreeNodeProps {
     nodeName: string;
-    subComponent: JSX.Element;
-    icon?: JSX.Element;
-    colors?: BaseNodeColors;
+    contentText: string;
+    colors?: ThreeNodeColors;
     width?: string | number;
     height?: string | number;
     borderRadius?: string | number;
     fontFamily?: string;
+
+    // For more advanced styling, allow passing custom style objects
+    customRootStyle?: React.CSSProperties;
+    customNameStyle?: React.CSSProperties;
+    customSectionsContainerStyle?: React.CSSProperties;
+    customLeftSectionStyle?: React.CSSProperties;
+    customCenterSectionStyle?: React.CSSProperties;
+    customRightSectionStyle?: React.CSSProperties;
 }
 
 /**
- * BaseNode: A React component representing a generic node in the visual scripting graph.
- * It features a name, a subComponent, and configuration buttons.
- * Resizeable.
+ * ThreeNode: A React component representing a node in a visual scripting graph.
+ * It features a name, a central content area, and two blank side sections,
+ * with configurable dimensions and colors for a minimalist look.
  */
-const BaseNode: React.FC<BaseNodeProps> = ({
-    id,
+const ThreeNode: React.FC<ThreeNodeProps> = ({
     nodeName,
-    subComponent,
-    icon = <></>,
+    contentText,
     colors = {}, // Default to an empty object if no colors are provided
     width = '300px', // Medium size, landscape phone-like width
     height = '150px', // Medium size, landscape phone-like height
     borderRadius = '8px', // Rounded corners for a modern look
     fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    customRootStyle,
+    customNameStyle,
+    customSectionsContainerStyle,
+    customLeftSectionStyle,
+    customCenterSectionStyle,
+    customRightSectionStyle,
 }) => {
     // Define hardcoded default colors for a minimalist theme
     const defaultStaticColors = {
@@ -68,8 +79,10 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         border: effectiveBorder,
         nameBackground: colors.nameBackground ?? effectiveBaseBg,
         nameText: colors.nameText ?? effectiveBaseText,
-        bottomSectionBackground: colors.bottomSectionBackground ?? effectiveBaseBg,
-        bottomSectionText: colors.bottomSectionText ?? effectiveBaseText, // Specific text color for content
+        leftSectionBackground: colors.leftSectionBackground ?? effectiveBaseBg,
+        centerSectionBackground: colors.centerSectionBackground ?? effectiveBaseBg,
+        centerSectionText: colors.centerSectionText ?? effectiveBaseText, // Specific text color for content
+        rightSectionBackground: colors.rightSectionBackground ?? effectiveBaseBg,
     };
 
     const nodeRootStyle: React.CSSProperties = {
@@ -85,11 +98,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         boxSizing: 'border-box',
         boxShadow: defaultStaticColors.shadow,
         overflow: 'hidden', // Ensures content respects border radius
+        ...customRootStyle, // Allow overriding with custom styles
     };
 
     const nameStyle: React.CSSProperties = {
-        alignItems: 'center',
-        textAlign: 'left',
+        textAlign: 'center',
         fontWeight: '500', // Semi-bold for emphasis
         padding: '5px 10px', // Adequate padding
         fontSize: '12px', // 14px/16=0.875em
@@ -97,6 +110,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         color: C.nameText,
         borderBottom: `1px solid ${C.border}`, // Separator line
         flexShrink: 0, // Prevent this section from shrinking
+        ...customNameStyle,
     };
 
     const sectionsContainerStyle: React.CSSProperties = {
@@ -104,10 +118,13 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         flexGrow: 1, // Allows this container to fill remaining vertical space
         width: '100%',
         overflow: 'hidden', // Important if sections have borders or distinct backgrounds
+        ...customSectionsContainerStyle,
     };
 
     // Flex distribution: small left (e.g., 20%), large center (e.g., 60%), small right (e.g., 20%)
-    const bottomSectionFlex = '1 1 100%';
+    const leftSectionFlex = '1 1 20%';
+    const centerSectionFlex = '1 1 60%';
+    const rightSectionFlex = '1 1 20%';
 
     const commonSectionStyle: React.CSSProperties = {
         padding: '10px',
@@ -120,75 +137,59 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         fontSize: '8px', // 14px/16=0.875em
     };
 
-    const bottomSectionStyle: React.CSSProperties = {
+    const leftSectionStyle: React.CSSProperties = {
+        ...commonSectionStyle,
+        flex: leftSectionFlex,
+        backgroundColor: C.leftSectionBackground,
+        // Optional: borderRight: `1px dashed ${C.border}`, // Example for a subtle separator
+        ...customLeftSectionStyle,
+    };
+
+    const centerSectionStyle: React.CSSProperties = {
         ...commonSectionStyle, // Inherit common styles
-        flex: bottomSectionFlex,
-        backgroundColor: C.bottomSectionBackground,
-        color: C.bottomSectionText,
+        flex: centerSectionFlex,
+        backgroundColor: C.centerSectionBackground,
+        color: C.centerSectionText,
         padding: '5px 10px', // Slightly more padding for content
         overflowY: 'auto',   // Enable vertical scrolling for long content
         alignItems: 'stretch', // Make children (like the text div) fill the width
-        borderLeft: `0px solid ${C.border}`,
-        borderRight: `0px solid ${C.border}`,
+        borderLeft: `1px solid ${C.border}`,
+        borderRight: `1px solid ${C.border}`,
+        ...customCenterSectionStyle,
     };
 
+    const rightSectionStyle: React.CSSProperties = {
+        ...commonSectionStyle,
+        flex: rightSectionFlex,
+        backgroundColor: C.rightSectionBackground,
+        // Optional: borderLeft: `1px dashed ${C.border}`, // Example for a subtle separator
+        ...customRightSectionStyle,
+    };
 
     return (
-        <>
-            <div style={nodeRootStyle} data-testid="base-node-root">
-                <div style={nameStyle} data-testid="base-node-name">
-                    {icon}
-                    {nodeName}
+        <div style={nodeRootStyle} data-testid="three-node-root">
+            <div style={nameStyle} data-testid="three-node-name">
+                {nodeName}
+            </div>
+            <div style={sectionsContainerStyle} data-testid="three-node-sections-container">
+                <div style={leftSectionStyle} data-testid="three-node-left-section">
+                    {/* Left blank section - typically for input connection points/ports */}
                 </div>
-                <div style={sectionsContainerStyle} data-testid="base-node-sections-container">
-                    <div style={bottomSectionStyle} data-testid="base-node-center-section">
-                        {/* Wrapper div to control text alignment and preserve line breaks */}
-                        <div style={{ whiteSpace: 'pre-wrap', textAlign: 'left', width: '100%' }}>
-                            {subComponent}
-                        </div>
+                <div style={centerSectionStyle} data-testid="three-node-center-section">
+                    {/* Wrapper div to control text alignment and preserve line breaks */}
+                    <div style={{ whiteSpace: 'pre-wrap', textAlign: 'left', width: '100%' }}>
+                        {contentText}
                     </div>
                 </div>
+                <div style={rightSectionStyle} data-testid="three-node-right-section">
+                    {/* Right blank section - typically for output connection points/ports */}
+                </div>
             </div>
-        </>
+        </div>
     );
 };
 
-export default BaseNode;
-
-
-/* 
-const controlStyle = {
-    background: 'transparent',
-    border: 'none',
-};
-
-<NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
-    <ResizeIcon />
-</NodeResizeControl>
-
-function ResizeIcon() {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-            stroke='#202124'
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ position: 'absolute', right: 5, bottom: 5 }}
-        >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <polyline points="16 20 20 20 20 16" />
-            <line x1="14" y1="14" x2="20" y2="20" />
-            <polyline points="8 4 4 4 4 8" />
-            <line x1="4" y1="4" x2="10" y2="10" />
-        </svg>
-    );
-}
-*/
+export default ThreeNode;
 
 /* USAGE EXAMPLE:
 

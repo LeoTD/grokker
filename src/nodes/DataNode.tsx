@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { Handle, Position, NodeProps, type Node, Background, NodeResizeControl, NodeToolbar } from '@xyflow/react';
+import { Handle, Position, NodeProps, type Node, NodeToolbar } from '@xyflow/react';
 import { DataType } from './types';
 import BaseNode from './BaseNode';
 
@@ -65,6 +65,8 @@ const DataNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string
         },
     }
 
+    // Icon resized from toolbar. 12px seems like a good size.
+    const DATABASE_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: '5px' }}><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
 
     /*
     **  Putting it all together
@@ -103,8 +105,9 @@ const DataNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string
                     background: colors.background,
                     border: colors.border,
                 }}
-                height={TYPED_PROPS[nodeDataType].height}
-                width={TYPED_PROPS[nodeDataType].width}
+                height={isDataHidden ? '75px' : TYPED_PROPS[nodeDataType].height}
+                width={isDataHidden ? '125px' : TYPED_PROPS[nodeDataType].width}
+                icon={DATABASE_ICON}
             />
 
             <Handle

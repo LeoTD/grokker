@@ -58,7 +58,18 @@ const MinimalistNavbar = () => {
             dragging: false,
         });
     };
-    const handleAiClick = () => console.log('AI clicked');
+
+    const handleAiClick = () => {
+        addNodes({
+            id: getID(),
+            type: 'ai-transform',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'AINode' },
+            selected: false,
+            dragging: false,
+        });
+    };
+
     const handleTransformClick = () => console.log('Transform clicked');
     const handleVizClick = () => console.log('Visualization clicked');
     const handleExecClick = () => console.log('Execute clicked');
