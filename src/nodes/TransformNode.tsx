@@ -4,12 +4,12 @@ import { DataType } from './types';
 import BaseNode from './BaseNode';
 
 const colors = {
-    background: '#fc7e8f',  // light shade
-    handle: '#9177C7',      // med shade
+    background: '#FEEFC3',  // light shade
+    handle: '#FBBC04',      // med shade
     border: '#202124',
 }
 
-const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }>>) => {
+const TransformNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }>>) => {
     /*
     **  Constants for handling features for each data type:
     */
@@ -65,7 +65,7 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
     }
 
     // Icon resized from toolbar. 12px seems like a good size.
-    const GEMINI_LOGO: JSX.Element = <svg fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }} width="12" height="12" viewBox="0 0 16 16"><path d="M16 8.016A8.522 8.522 0 008.016 16h-.032A8.521 8.521 0 000 8.016v-.032A8.521 8.521 0 007.984 0h.032A8.522 8.522 0 0016 7.984v.032z" fill="url(#prefix__paint0_radial_980_20147)" /><defs><radialGradient id="prefix__paint0_radial_980_20147" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(16.1326 5.4553 -43.70045 129.2322 1.588 6.503)"><stop offset=".067" stopColor="#9168C0" /><stop offset=".343" stopColor="#5684D1" /><stop offset=".672" stopColor="#1BA1E3" /></radialGradient></defs></svg>
+    const MATH_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }} width="12" height="12" viewBox="0 0 512 512"><path fill="currentColor" d="M472 40H40a24.028 24.028 0 0 0-24 24v384a24.028 24.028 0 0 0 24 24h432a24.028 24.028 0 0 0 24-24V64a24.028 24.028 0 0 0-24-24Zm-8 400H48V72h416Z" /><path fill="currentColor" d="M152 240h32v-40h40v-32h-40v-40h-32v40h-40v32h40v40zm44.284 45.089L168 313.373l-28.284-28.284l-22.627 22.627L145.373 336l-28.284 28.284l22.627 22.627L168 358.627l28.284 28.284l22.627-22.627L190.627 336l28.284-28.284l-22.627-22.627zM288 168h112v32H288zm0 120h112v32H288zm0 64h112v32H288z" /></svg>
 
     /*
     **  Putting it all together
@@ -108,44 +108,31 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
                 }}
                 height={isDataHidden ? '75px' : TYPED_PROPS[DataType.TEXT].height}
                 width={isDataHidden ? '125px' : TYPED_PROPS[DataType.TEXT].width}
-                icon={GEMINI_LOGO}
+                icon={MATH_ICON}
             />
 
             <Handle
                 type="target"
-                id="data"
+                id="data0"
                 position={Position.Left}
                 isConnectable={isConnectable}
                 style={{
                     height: 10,
                     width: 10,
-                    top: "75%",
+                    top: "66%",
                     border: `1px solid ${colors.border}`,
                     background: colors.handle,
                 }}
             />
             <Handle
                 type="target"
-                id="criteria"
+                id="data1"
                 position={Position.Left}
                 isConnectable={isConnectable}
                 style={{
                     height: 10,
                     width: 10,
-                    top: "50%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
-            <Handle
-                type="target"
-                id="context"
-                position={Position.Left}
-                isConnectable={isConnectable}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "25%",
+                    top: "33%",
                     border: `1px solid ${colors.border}`,
                     background: colors.handle,
                 }}
@@ -167,4 +154,4 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
     )
 }
 
-export default memo(AINode);
+export default memo(TransformNode);

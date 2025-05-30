@@ -4,12 +4,12 @@ import { DataType } from './types';
 import BaseNode from './BaseNode';
 
 const colors = {
-    background: '#fc7e8f',  // light shade
-    handle: '#9177C7',      // med shade
+    background: '#CEEAD6',  // light shade
+    handle: '#34A853',      // med shade
     border: '#202124',
 }
 
-const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }>>) => {
+const TransformNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }>>) => {
     /*
     **  Constants for handling features for each data type:
     */
@@ -65,7 +65,17 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
     }
 
     // Icon resized from toolbar. 12px seems like a good size.
-    const GEMINI_LOGO: JSX.Element = <svg fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }} width="12" height="12" viewBox="0 0 16 16"><path d="M16 8.016A8.522 8.522 0 008.016 16h-.032A8.521 8.521 0 000 8.016v-.032A8.521 8.521 0 007.984 0h.032A8.522 8.522 0 0016 7.984v.032z" fill="url(#prefix__paint0_radial_980_20147)" /><defs><radialGradient id="prefix__paint0_radial_980_20147" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(16.1326 5.4553 -43.70045 129.2322 1.588 6.503)"><stop offset=".067" stopColor="#9168C0" /><stop offset=".343" stopColor="#5684D1" /><stop offset=".672" stopColor="#1BA1E3" /></radialGradient></defs></svg>
+    const GRAPH_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }} width="12" height="12" viewBox="0 0 512 512"><path fill="currentColor" d="M376 160v32h65.372L252 381.373l-72-72L76.686 412.686l22.628 22.628L180 354.627l72 72l212-211.999V280h32V160H376z" /><path fill="currentColor" d="M48 104H16v392h480v-32H48V104z" /></svg>
+    const GDRIVE_ICON: JSX.Element = <>
+        <svg width="14" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da" />
+            <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47" />
+            <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335" />
+            <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d" />
+            <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc" />
+            <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00" />
+        </svg>
+    </>
 
     /*
     **  Putting it all together
@@ -96,6 +106,9 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
                     👁️
                 </button>
                 <button key='⚙️' onClick={() => console.log(`config clicked on ${id}`)}>⚙️</button>
+                <button>
+                    {GDRIVE_ICON}
+                </button>
             </NodeToolbar>
 
             <BaseNode
@@ -108,52 +121,13 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
                 }}
                 height={isDataHidden ? '75px' : TYPED_PROPS[DataType.TEXT].height}
                 width={isDataHidden ? '125px' : TYPED_PROPS[DataType.TEXT].width}
-                icon={GEMINI_LOGO}
+                icon={GRAPH_ICON}
             />
 
             <Handle
                 type="target"
                 id="data"
                 position={Position.Left}
-                isConnectable={isConnectable}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "75%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
-            <Handle
-                type="target"
-                id="criteria"
-                position={Position.Left}
-                isConnectable={isConnectable}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "50%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
-            <Handle
-                type="target"
-                id="context"
-                position={Position.Left}
-                isConnectable={isConnectable}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "25%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
-            <Handle
-                type="source"
-                id="o"
-                position={Position.Right}
                 isConnectable={isConnectable}
                 style={{
                     height: 10,
@@ -167,4 +141,4 @@ const AINode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }
     )
 }
 
-export default memo(AINode);
+export default memo(TransformNode);

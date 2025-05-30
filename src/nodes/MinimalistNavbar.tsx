@@ -12,8 +12,9 @@ const MinimalistNavbar = () => {
             display: 'flex',
             alignItems: 'center',
             padding: '10px 20px',
-            backgroundColor: 'transparent', // Or a subtle background color like '#f8f9fa'
+            backgroundColor: '#F1F3F4', //'transparent', // Or a subtle background color like '#f8f9fa'
             zIndex: 1000,
+            borderRadius: '32px',
         },
         buttonGroup: {
             display: 'flex',
@@ -70,9 +71,27 @@ const MinimalistNavbar = () => {
         });
     };
 
-    const handleTransformClick = () => console.log('Transform clicked');
-    const handleVizClick = () => console.log('Visualization clicked');
-    const handleExecClick = () => console.log('Execute clicked');
+    const handleTransformClick = () => {
+        addNodes({
+            id: getID(),
+            type: 'transform',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'TransformNode' },
+            selected: false,
+            dragging: false,
+        });
+    };
+    const handleVizClick = () => {
+        addNodes({
+            id: getID(),
+            type: 'viz',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'VizNode' },
+            selected: false,
+            dragging: false,
+        });
+    };
+    const handleExecClick = () => console.log('exec')
 
     return (
         <div style={styles.navbar}>

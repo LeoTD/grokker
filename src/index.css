@@ -14,7 +14,7 @@ body,
 /* Toolbar Node */
 
 .react-flow__node-toolbar {
-    background-color: #000000;
+    background-color: #F1F3F4;
     border-radius: 16px;
     overflow: hidden;
 }

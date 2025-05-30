@@ -43,10 +43,10 @@ export default function App() {
             onConnect={onConnect}
             fitView
         >
-            <Panel>
-                <button onClick={() => ExecuteGraph()}>Execute</button>
-            </Panel>
-            <Background />
+            <Background
+                color='#9AA0A6'
+                bgColor='#202124'
+            />
             <MiniMap />
             <Controls />
 
@@ -54,3 +54,11 @@ export default function App() {
         </ReactFlow>
     );
 }
+
+/*
+
+            <Panel>
+                <button onClick={() => ExecuteGraph()}>Execute</button>
+            </Panel>
+
+*/
