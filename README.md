@@ -7,4 +7,4 @@ npm install
 npm run dev
 ```
 
-<small><small><small><small>Sorry about the spaghetti. I don't do web dev.</small></small></small></small>
+<sup><sup><sup><sup>Sorry about the spaghetti. I don't do web dev.</sup></sup></sup></sup>
