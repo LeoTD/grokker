@@ -9,7 +9,16 @@ const colors = {
     border: '#202124',
 }
 
-const DataNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string, inputType: DataType }>>) => {
+const DataNode = ({
+    id,
+    data,
+    isConnectable,
+}: NodeProps<Node<{
+    nodeName: string,
+    inputType: DataType,
+    rawData?: string,
+}>>) => {
+
     /*
     **  Constants for handling features for each data type:
     */
@@ -33,7 +42,9 @@ const DataNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string
                     }}
                     rows={9}
                     cols={22}
-                ></textarea>
+                >
+                    {data.text}
+                </textarea>
             </>,
         [DataType.AUDIO]: <><div>audio</div></>,
         [DataType.IMAGE]: <><div>image</div></>,

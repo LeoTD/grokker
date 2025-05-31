@@ -9,6 +9,7 @@ import {
     useEdgesState,
     Panel,
     type OnConnect,
+    useReactFlow,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -32,6 +33,13 @@ export default function App() {
         [setEdges]
     );
 
+    const executeGraph = () => {
+        const _vizNodes = nodes.filter(node => node.type === 'viz');
+
+        console.log(_vizNodes);
+        //    const execStack = new Stack<string>();
+    };
+
     return (
         <ReactFlow
             nodes={nodes}
@@ -50,7 +58,9 @@ export default function App() {
             <MiniMap />
             <Controls />
 
-            <MinimalistNavbar />
+            <MinimalistNavbar
+                onExec={executeGraph}
+            />
         </ReactFlow>
     );
 }

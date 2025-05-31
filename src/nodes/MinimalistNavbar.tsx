@@ -2,7 +2,13 @@ import { useReactFlow } from "@xyflow/react";
 import { getID } from "../App";
 import { DataType } from "./types";
 
-const MinimalistNavbar = () => {
+interface NavbarProps {
+    onExec: () => void;
+}
+
+const MinimalistNavbar: React.FC<NavbarProps> = ({
+    onExec,
+}) => {
     const styles = {
         navbar: {
             position: 'fixed',
@@ -45,7 +51,9 @@ const MinimalistNavbar = () => {
         },
     };
 
-    // Placeholder functions for button clicks
+    // This is currently the only place where new nodes are created
+    // Definitely wrong to have this functionality here, but it's a hackathon ¯\_(ツ)_/¯
+    // TODO: Put this somewhere that makes more sense. Callbacks?
 
     const { addNodes } = useReactFlow();
 
@@ -54,7 +62,7 @@ const MinimalistNavbar = () => {
             id: getID(),
             type: 'data-input',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'DataNode', inputType: DataType.TEXT },
+            data: { nodeName: 'DataNode', inputType: DataType.TEXT, runtime: { ready: false, success: false, error: false } },
             selected: false,
             dragging: false,
         });
@@ -65,7 +73,7 @@ const MinimalistNavbar = () => {
             id: getID(),
             type: 'ai-transform',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'AINode' },
+            data: { nodeName: 'AINode', runtime: { ready: false, success: false, error: false } },
             selected: false,
             dragging: false,
         });
@@ -76,7 +84,7 @@ const MinimalistNavbar = () => {
             id: getID(),
             type: 'transform',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'TransformNode' },
+            data: { nodeName: 'TransformNode', runtime: { ready: false, success: false, error: false } },
             selected: false,
             dragging: false,
         });
@@ -86,12 +94,14 @@ const MinimalistNavbar = () => {
             id: getID(),
             type: 'viz',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'VizNode' },
+            data: { nodeName: 'VizNode', runtime: { ready: false, success: false, error: false } },
             selected: false,
             dragging: false,
         });
     };
-    const handleExecClick = () => console.log('exec')
+    const handleExecClick = () => {
+        onExec();
+    };
 
     return (
         <div style={styles.navbar}>
@@ -118,7 +128,7 @@ const MinimalistNavbar = () => {
                     {GEMINI_LOGO}
                 </button>
 
-                {/* Mathematics Icon (e.g., sigma, function symbol, or calculator) */}
+                {/* Generic Transform Icon (e.g., sigma, function symbol, or calculator) */}
                 <button
                     style={styles.iconButton}
                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e9e9e9'}
@@ -158,6 +168,8 @@ const MinimalistNavbar = () => {
 };
 
 export default MinimalistNavbar;
+
+// Who needs a <def>? not me
 
 const MATH_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 512 512"><path fill="currentColor" d="M472 40H40a24.028 24.028 0 0 0-24 24v384a24.028 24.028 0 0 0 24 24h432a24.028 24.028 0 0 0 24-24V64a24.028 24.028 0 0 0-24-24Zm-8 400H48V72h416Z" /><path fill="currentColor" d="M152 240h32v-40h40v-32h-40v-40h-32v40h-40v32h40v40zm44.284 45.089L168 313.373l-28.284-28.284l-22.627 22.627L145.373 336l-28.284 28.284l22.627 22.627L168 358.627l28.284 28.284l22.627-22.627L190.627 336l28.284-28.284l-22.627-22.627zM288 168h112v32H288zm0 120h112v32H288zm0 64h112v32H288z" /></svg>
 const PLAY_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 512 512"><path fill="currentColor" d="M148.092 496h-36.45V16.333h34.547L416 256.286Zm-4.45-439.108v400.15l224.287-200.684Z" /></svg>
