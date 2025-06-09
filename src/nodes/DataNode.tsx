@@ -18,16 +18,27 @@ const DataNode = ({
     inputType: DataType,
     rawData?: string,
 }>>) => {
+    const [nodeDataType, setNodeDataType] = useState<DataType>(data.inputType);
+    const [configNodeDataType, setConfigNodeDataType] = useState<string>('');
+    const [isDataHidden, setIsDataHidden] = useState<Boolean>(true);
+    const [isConfigOpen, setIsConfigOpen] = useState<Boolean>(true);
 
     /*
-    **  Constants for handling features for each data type:
+    **  Subcomponents and properties for each data type plus hidden and config:
     */
+
+
     const HIDDEN_SUBCOMPONENT: JSX.Element =
         <>
             <div>
                 Status: Idle
             </div>
         </>;
+
+    const HIDDEN_PROPS: { height: string, width: string } = {
+        height: '75px',
+        width: '125px',
+    }
 
     const TYPED_SUBCOMPONENTS: Record<DataType, JSX.Element> = {
         [DataType.TEXT]:
@@ -43,7 +54,7 @@ const DataNode = ({
                     rows={9}
                     cols={22}
                 >
-                    {data.text}
+                    {data.rawData}
                 </textarea>
             </>,
         [DataType.AUDIO]: <><div>audio</div></>,
@@ -89,13 +100,67 @@ const DataNode = ({
         </svg>
     </>
 
+    const [subComponent, setSubComponent] = useState<JSX.Element>(HIDDEN_SUBCOMPONENT);
+    const [baseNodeProps, setBaseNodeProps] = useState<{ height: string, width: string }>(HIDDEN_PROPS);
+
+    /*
+    **  Config subcomponent
+    */
+
+    const handleTypeChange = (event) => {
+        setConfigNodeDataType(event.target.value)
+        switch (event.target.value) {
+            default:
+            case 'text':
+                setNodeDataType(DataType.TEXT)
+                break;
+            case 'audio':
+                setNodeDataType(DataType.AUDIO)
+                break;
+            case 'image':
+                setNodeDataType(DataType.IMAGE)
+                break;
+            case 'pdf':
+                setNodeDataType(DataType.PDF)
+                break;
+            case 'url':
+                setNodeDataType(DataType.URL)
+                break;
+        }
+    };
+
+    const CONFIG_PROPS: { height: string, width: string } = {
+        height: '200px',
+        width: '200px',
+    }
+
+    // TODO: Styles
+    const CONFIG_SUBCOMPONENT: JSX.Element =
+        <>
+            <div>
+                This is the config window.
+            </div>
+            <div>
+                <label>
+                    Select an option:
+                    <select value={configNodeDataType} onChange={handleTypeChange}>
+                        <option value="text">text</option>
+                        <option value="audio">audio</option>
+                        <option value="image">image</option>
+                        <option value="pdf">pdf</option>
+                        <option value="url">url</option>
+                    </select>
+                </label>
+                <p>You selected: {configNodeDataType}</p>
+            </div>
+
+        </>;
+
+
+
     /*
     **  Putting it all together
     */
-    const [nodeDataType, setNodeDataType] = useState<DataType>(data.inputType);
-    const [isDataHidden, setIsDataHidden] = useState<Boolean>(true);
-    const [subComponent, setSubComponent] = useState<JSX.Element>(HIDDEN_SUBCOMPONENT);
-    const [nodeValue, setNodeValue] = useState(undefined);
 
     return (
         <>
@@ -103,19 +168,39 @@ const DataNode = ({
                 <button
                     key='👁️'
                     onClick={() => {
+                        setIsConfigOpen(false);
                         if (isDataHidden === true) {
                             setIsDataHidden(false);
                             setSubComponent(TYPED_SUBCOMPONENTS[nodeDataType]);
+                            setBaseNodeProps(TYPED_PROPS[nodeDataType])
                         }
                         else {
                             setIsDataHidden(true);
                             setSubComponent(HIDDEN_SUBCOMPONENT);
+                            setBaseNodeProps(HIDDEN_PROPS)
                         }
                     }}
                 >
                     👁️
                 </button>
-                <button key='⚙️' onClick={() => console.log(`config clicked on ${id}`)}>⚙️</button>
+                <button
+                    key='⚙️'
+                    onClick={() => {
+                        setIsDataHidden(false);
+                        if (isConfigOpen === true) {
+                            setIsConfigOpen(false);
+                            setSubComponent(TYPED_SUBCOMPONENTS[nodeDataType]);
+                            setBaseNodeProps(TYPED_PROPS[nodeDataType])
+                        }
+                        else {
+                            setIsConfigOpen(true);
+                            setSubComponent(CONFIG_SUBCOMPONENT);
+                            setBaseNodeProps(CONFIG_PROPS)
+                        }
+                    }}
+                >
+                    ⚙️
+                </button>
                 <button>
                     {GDRIVE_ICON}
                 </button>
@@ -129,8 +214,8 @@ const DataNode = ({
                     background: colors.background,
                     border: colors.border,
                 }}
-                height={isDataHidden ? '75px' : TYPED_PROPS[nodeDataType].height}
-                width={isDataHidden ? '125px' : TYPED_PROPS[nodeDataType].width}
+                height={baseNodeProps.height}
+                width={baseNodeProps.width}
                 icon={DATABASE_ICON}
             />
 
