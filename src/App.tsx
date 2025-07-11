@@ -10,17 +10,19 @@ import {
     Panel,
     type OnConnect,
     useReactFlow,
+    type Node,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 
 import { initialNodes, nodeTypes } from './nodes';
 import { initialEdges, edgeTypes } from './edges';
-import MinimalistNavbar from './nodes/MinimalistNavbar';
-import { Stack } from './exec/executeFlow';
-import { AppNode } from './nodes/types';
+import MinimalistNavbar from './MinimalistNavbar';
+import { type AppNode } from './nodes/types';
+import { DataType } from './old_nodes/types';
+import { stringConcat } from './nodes/TransformNode';
 
-let id = 0;
+let id = 1;
 export const getID = () => `${id++}`
 
 export default function App() {
@@ -31,46 +33,150 @@ export default function App() {
         [setEdges]
     );
 
-    const executeGraph = () => {
+    // Functions to create new nodes with default settings
+    const addDataNode = useCallback(() => {
+        const newNode = {
+            id: getID(), // Generate a unique ID
+            type: 'data-input',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'DataNode', onDataChange: handleDataChange, rawData: '', dataType: 'text', opType: 'no-op' },
+            selected: false,
+            dragging: false,
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [setNodes]);
 
-        // start from the viz nodes, add them to the stack
-        // peek and add top node's dependencies to stack (each node is dependent on any connections to it's input handles)
-        // repeat peeking and adding dependencies until top item has no dependencies
-        // run and validate top node
+    const addAINode = useCallback(() => {
+        const newNode = {
+            id: getID(), // Generate a unique ID
+            type: 'data-input',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'DataNode', onDataChange: handleDataChange, rawData: '' },
+            selected: false,
+            dragging: false,
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [setNodes]);
 
-        // This is effectively a DFS starting with Viz nodes as root, with the extra wrinkle that each node may be 
-        // a dependecy for multiple downstream nodes, so we mark nodes that have already been run and validated 
-        // to prevent duplication of work and duplication of api calls
+    const addTransformNode = useCallback(() => {
+        const newNode = {
+            id: getID(), // Generate a unique ID
+            type: 'transform',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'TransformNode', onDataChange: handleDataChange, rawData: 'default text', dataType: 'text', opType: 'string-concat' },
+            selected: false,
+            dragging: false,
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [setNodes]);
 
-        // Start by resetting the tracking vars for each node. 
-        //   * {ready} Ready to be run?
-        //   * {success} Ran successfully. Output is ready.
-        //   * {error} Something went wrong. Halt execution and report to the user.
-        const rf = useReactFlow();
-        const _vizNodes = nodes.filter(node => node.type === 'viz');
+    const addVizNode = useCallback(() => {
+        const newNode = {
+            id: getID(), // Generate a unique ID
+            type: 'viz',
+            position: { x: 0, y: 0 },
+            data: { nodeName: 'Viz', onDataChange: handleDataChange, rawData: 'Hello World', dataType: 'text', opType: 'no-op' },
+            selected: false,
+            dragging: false,
+        };
+        setNodes((nds) => nds.concat(newNode));
+    }, [setNodes]);
 
-        const execStack = new Stack<string>();
+    // Function to update the raw data in a specific node's data prop
+    const handleDataChange = (nodeId: string, newData: any, dataType: string) => {
+        setNodes((nds) =>
+            nds.map((node) => {
+                if (node.id === nodeId) {
+                    // Create a new data object to ensure React detects the change
+                    return {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            rawData: newData,
+                            dataType: dataType,
+                        },
+                    };
+                }
+                return node;
+            })
+        );
+    };
 
-        _vizNodes.forEach((n) => {
-            execStack.push(n.id);
+    // Function to update raw data values accross all nodes
+    const updateAll = () => {
+        const visited = new Set();
+        let stack: string[] = [];
+        nodes.forEach((node) => {
+            if (node.type === 'viz') {
+                stack.push(node.id);
+            }
         });
 
-        let id: string | undefined = undefined;
-        let n;
-        while (execStack.isEmpty() === false) {
-            id = execStack.peek();
-            // if (id === undefined) {
-            //     break;
-            // }
-            n = rf.getNode(id);
-            // if (n === undefined) {
-            //     break;
-            // }
+        // account for case with no viz nodes, start at random transform node.
+        // order of operations is not ideal for visualization purposes, but perfectly functional overall
+        if (stack.length == 0) {
+            nodes.forEach((node) => {
+                if (node.type === 'transform' || node.type === 'ai-transform') {
+                    stack.push(node.id);
+                }
+            });
+        }
 
+        const getDataByID = (id: string) => {
+            const n = nodes.find((node) => node.id === id)
 
+            if (!n) { return undefined; }
+            if (visited.has(id)) { return [n.data.rawData, n.data.dataType] }
 
+            visited.add(id);
+            if (n.type === 'data-input') {
+                return [n.data.rawData, n.data.dataType];
+            }
+            if (n.type === 'viz') {
+                let sources = edges.filter((edge) => edge.target === id).map((edge) => { return edge.source });
+
+                // newData is an array of tuples [rawData, dataType]
+                let newData = sources.map((source) => {
+                    return getDataByID(source);
+                });
+
+                if (newData.length > 1) {
+                    handleDataChange(id, newData, 'array');
+                }
+                else if (newData.length == 1) {
+                    handleDataChange(id, newData[0][0], newData[0][1])
+                }
+                return [n.data.rawData, n.data.dataType];
+            }
+            if (n.type === 'transform') {
+                let sources = edges.filter((edge) => edge.target === id).map((edge) => { return edge.source });
+
+                // newData is an array of tuples [rawData, dataType]
+                let newData = sources.map((source) => {
+                    return getDataByID(source);
+                });
+
+                switch (n.data.opType) { // opType should probably be an enum, but w/e
+                    case 'string-concat':
+                        let [opResult, dataType] = stringConcat(newData);
+                        handleDataChange(id, opResult, dataType);
+                        break;
+                    default:
+                        console.log(`Invalid opType for node {id}`);
+                        break;
+                }
+                return [n.data.rawData, n.data.dataType];
+            }
+        }
+
+        let currentNodeID: string = ''
+        while (stack.length > 0) {
+            currentNodeID = stack[stack.length - 1]
+            getDataByID(currentNodeID);
+            stack.pop()
         }
     };
+
 
     return (
         <ReactFlow
@@ -87,11 +193,15 @@ export default function App() {
                 color='#9AA0A6'
                 bgColor='#202124'
             />
-            <MiniMap />
+            {/* <MiniMap /> */}
             <Controls />
 
             <MinimalistNavbar
-                onExec={executeGraph}
+                onExec={updateAll}
+                newDataNode={addDataNode}
+                newAINode={addAINode}
+                newTransformNode={addTransformNode}
+                newVizNode={addVizNode}
             />
         </ReactFlow>
     );

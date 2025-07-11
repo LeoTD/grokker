@@ -1,71 +1,90 @@
 import { memo, useState } from 'react';
-import { Handle, Position, NodeProps, type Node, NodeToolbar } from '@xyflow/react';
-import { DataType } from './types';
-import BaseNode from './BaseNode';
+import { Handle, Position, NodeProps, NodeToolbar } from '@xyflow/react';
+import { type VizNode } from './types';
 
 const colors = {
-    background: '#CEEAD6',  // light shade
-    handle: '#34A853',      // med shade
+    background: '#D2E3FC',  // light shade
+    handle: '#4285F4',      // med shade
     border: '#202124',
 }
 
-const TransformNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: string }>>) => {
-    /*
-    **  Constants for handling features for each data type:
-    */
-    const HIDDEN_SUBCOMPONENT: JSX.Element =
-        <>
-            <div>
-                Status: Idle
-            </div>
-        </>;
+const VizNode = ({ id, data }: NodeProps<VizNode>) => {
+    // Renders the appropriate viz based on the dataType prop.
+    const renderViz = () => {
+        switch (data.dataType) {
+            /*case 'array':
+                return (
+                    {
+                        data.rawData.map((e, i) => {
+                            if (e[1] === 'text') {
+                                return (
+                                    <div key={i} className="viz-node">
+                                        <p className="p-2 bg-gray-100 rounded break-words">{e[0]}</p>
+                                    </div>
+                                );
+                            }
+                            if (e[1] === 'img') {
+                                return (
+                                    <>
+                                        <div className="viz-node">
+                                            <ul className="list-disc list-inside p-2 bg-gray-100 rounded">
+                                                <li><strong>Name:</strong> {data.rawData.name}</li>
+                                                <li><strong>Type:</strong> {data.rawData.type}</li>
+                                                <li><strong>Size:</strong> {data.rawData.size} bytes</li>
+                                            </ul>
+                                        </div>
 
-    const TYPED_SUBCOMPONENTS: Record<DataType, JSX.Element> = {
-        [DataType.TEXT]:
-            <>
-                <textarea
-                    className='nodrag'
-                    style={{
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        padding: '5px',
-                        resize: 'none',
-                    }}
-                    rows={9}
-                    cols={22}
-                ></textarea>
-            </>,
-        [DataType.AUDIO]: <><div>audio</div></>,
-        [DataType.IMAGE]: <><div>image</div></>,
-        [DataType.PDF]: <><div>pdf</div></>,
-        [DataType.URL]: <><div>url</div></>,
-    }
+                                        <img
+                                            key={i}
+                                            src={URL.createObjectURL(data.rawData)}
+                                            className="border p-2 rounded w-full"
+                                        />
+                                    </>
 
-    const TYPED_PROPS: Record<DataType, { height: string, width: string }> = {
-        [DataType.TEXT]: {
-            height: '200px',
-            width: '200px'
-        },
-        [DataType.AUDIO]: {
-            height: '200px',
-            width: '200px',
-        },
-        [DataType.IMAGE]: {
-            height: '200px',
-            width: '200px',
-        },
-        [DataType.PDF]: {
-            height: '200px',
-            width: '200px',
-        },
-        [DataType.URL]: {
-            height: '200px',
-            width: '200px',
-        },
-    }
+                                );
+                            }
+                        })
+                    }
+                );*/
+            case 'text':
+                if (data.rawData instanceof File) {
+                    return <p>Data is a file.</p>
+                }
+                return (
+                    <div className="viz-node">
+                        <h3 className="font-bold">Stored Text Data:</h3>
+                        <p className="p-2 bg-gray-100 rounded break-words">{data.rawData}</p>
+                    </div>
+                );
+            case 'img':
+                if (data.rawData instanceof File) {
+                    return (
+                        <>
+                            <div className="viz-node">
+                                <h3 className="font-bold">Stored Local File Data:</h3>
+                                <ul className="list-disc list-inside p-2 bg-gray-100 rounded">
+                                    <li><strong>Name:</strong> {data.rawData.name}</li>
+                                    <li><strong>Type:</strong> {data.rawData.type}</li>
+                                    <li><strong>Size:</strong> {data.rawData.size} bytes</li>
+                                </ul>
+                            </div>
+
+                            <img
+                                src={URL.createObjectURL(data.rawData)}
+                                className="border p-2 rounded w-full"
+                            />
+                        </>
+                    );
+                }
+                return <p>Data is not a file.</p>
+            default:
+                return <p>Invalid dataType specified. Use 'text' or 'img'.</p>;
+        }
+    };
 
     // Icon resized from toolbar. 12px seems like a good size.
-    const GRAPH_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }} width="12" height="12" viewBox="0 0 512 512"><path fill="currentColor" d="M376 160v32h65.372L252 381.373l-72-72L76.686 412.686l22.628 22.628L180 354.627l72 72l212-211.999V280h32V160H376z" /><path fill="currentColor" d="M48 104H16v392h480v-32H48V104z" /></svg>
+    const DATABASE_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: '5px' }}><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
+
     const GDRIVE_ICON: JSX.Element = <>
         <svg width="14" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
             <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da" />
@@ -80,55 +99,19 @@ const TransformNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: s
     /*
     **  Putting it all together
     */
-    const [isDataHidden, setIsDataHidden] = useState<Boolean>(true);
-    const [subComponent, setSubComponent] = useState<JSX.Element>(HIDDEN_SUBCOMPONENT);
-    const [nodeValue, setNodeValue] = useState(undefined);
-
-    const [prompt, setPrompt] = useState<string | undefined>(undefined);
-
 
     return (
         <>
             <NodeToolbar>
-                <button
-                    key='👁️'
-                    onClick={() => {
-                        if (isDataHidden === true) {
-                            setIsDataHidden(false);
-                            setSubComponent(TYPED_SUBCOMPONENTS[DataType.TEXT]);
-                        }
-                        else {
-                            setIsDataHidden(true);
-                            setSubComponent(HIDDEN_SUBCOMPONENT);
-                        }
-                    }}
-                >
-                    👁️
-                </button>
-                <button key='⚙️' onClick={() => console.log(`config clicked on ${id}`)}>⚙️</button>
-                <button>
-                    {GDRIVE_ICON}
-                </button>
             </NodeToolbar>
 
-            <BaseNode
-                id={id}
-                nodeName={data.nodeName}
-                subComponent={subComponent}
-                colors={{
-                    background: colors.background,
-                    border: colors.border,
-                }}
-                height={isDataHidden ? '75px' : TYPED_PROPS[DataType.TEXT].height}
-                width={isDataHidden ? '125px' : TYPED_PROPS[DataType.TEXT].width}
-                icon={GRAPH_ICON}
-            />
+            {renderViz()}
 
             <Handle
                 type="target"
-                id="data"
+                id="i0"
                 position={Position.Left}
-                isConnectable={isConnectable}
+                isConnectable={true}
                 style={{
                     height: 10,
                     width: 10,
@@ -141,4 +124,4 @@ const TransformNode = ({ id, data, isConnectable }: NodeProps<Node<{ nodeName: s
     )
 }
 
-export default memo(TransformNode);
+export default memo(VizNode);

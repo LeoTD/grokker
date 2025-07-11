@@ -1,7 +1,6 @@
 import { memo, useState } from 'react';
-import { Handle, Position, NodeProps, type Node, NodeToolbar } from '@xyflow/react';
-import { DataType } from './types';
-import BaseNode from './BaseNode';
+import { Handle, Position, NodeProps, NodeToolbar } from '@xyflow/react';
+import { type DataNode } from './types';
 
 const colors = {
     background: '#D2E3FC',  // light shade
@@ -9,82 +8,64 @@ const colors = {
     border: '#202124',
 }
 
-const DataNode = ({
-    id,
-    data,
-    isConnectable,
-}: NodeProps<Node<{
-    nodeName: string,
-    inputType: DataType,
-    rawData?: string,
-}>>) => {
-    const [nodeDataType, setNodeDataType] = useState<DataType>(data.inputType);
-    const [configNodeDataType, setConfigNodeDataType] = useState<string>('');
-    const [isDataHidden, setIsDataHidden] = useState<Boolean>(true);
-    const [isConfigOpen, setIsConfigOpen] = useState<Boolean>(true);
+const DataNode = ({ id, data }: NodeProps<DataNode>) => {
+    const [inputType, setInputType] = useState('text');
 
-    /*
-    **  Subcomponents and properties for each data type plus hidden and config:
-    */
+    // Handler for the text input change.
+    const handleTextChange = (event) => {
+        data.onDataChange(id, event.target.value, 'text');
+    };
 
+    // Handler for the local file input change.
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            const allowedImgTypes = ["image/png", "image/jpeg", "image/gif"];
+            const allowedTextTypes = ["text/plain", "text/markdown", "application/json", "text/csv"];
 
-    const HIDDEN_SUBCOMPONENT: JSX.Element =
-        <>
-            <div>
-                Status: Idle
-            </div>
-        </>;
-
-    const HIDDEN_PROPS: { height: string, width: string } = {
-        height: '75px',
-        width: '125px',
-    }
-
-    const TYPED_SUBCOMPONENTS: Record<DataType, JSX.Element> = {
-        [DataType.TEXT]:
-            <>
-                <textarea
-                    className='nodrag'
-                    style={{
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        padding: '5px',
-                        resize: 'none',
-                    }}
-                    rows={9}
-                    cols={22}
-                >
-                    {data.rawData}
-                </textarea>
-            </>,
-        [DataType.AUDIO]: <><div>audio</div></>,
-        [DataType.IMAGE]: <><div>image</div></>,
-        [DataType.PDF]: <><div>pdf</div></>,
-        [DataType.URL]: <><div>url</div></>,
-    }
-
-    const TYPED_PROPS: Record<DataType, { height: string, width: string }> = {
-        [DataType.TEXT]: {
-            height: '200px',
-            width: '200px'
-        },
-        [DataType.AUDIO]: {
-            height: '200px',
-            width: '200px',
-        },
-        [DataType.IMAGE]: {
-            height: '200px',
-            width: '200px',
-        },
-        [DataType.PDF]: {
-            height: '200px',
-            width: '200px',
-        },
-        [DataType.URL]: {
-            height: '200px',
-            width: '200px',
-        },
-    }
+            if (allowedImgTypes.includes(event.target.files[0].type)) {
+                data.onDataChange(id, event.target.files[0], 'img');
+            }
+            else if (allowedTextTypes.includes(event.target.files[0].type)) {
+                data.onDataChange(id, event.target.files[0].text(), 'text');
+            }
+        }
+    };
+    // Renders the appropriate input based on the inputType prop.
+    const renderInput = () => {
+        switch (inputType) {
+            case 'text':
+                return (
+                    <input
+                        type="text"
+                        value={data.rawData || ''} // Controlled component
+                        onChange={handleTextChange}
+                        placeholder="Enter text data..."
+                        className="border p-2 rounded w-full nodrag"
+                    />
+                );
+            case 'file': // TODO: read text file into text data
+                return (
+                    <input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="border p-2 rounded w-full"
+                    />
+                );
+            case 'gdrive':
+                return (
+                    <button
+                        onClick={() => {
+                            alert('GDrive integration goes here')
+                        }}
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Select from Google Drive
+                    </button>
+                );
+            default:
+                return <p>Invalid inputType specified. Use 'text', 'file', or 'drive'.</p>;
+        }
+    };
 
     // Icon resized from toolbar. 12px seems like a good size.
     const DATABASE_ICON: JSX.Element = <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: '5px' }}><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
@@ -100,64 +81,6 @@ const DataNode = ({
         </svg>
     </>
 
-    const [subComponent, setSubComponent] = useState<JSX.Element>(HIDDEN_SUBCOMPONENT);
-    const [baseNodeProps, setBaseNodeProps] = useState<{ height: string, width: string }>(HIDDEN_PROPS);
-
-    /*
-    **  Config subcomponent
-    */
-
-    const handleTypeChange = (event) => {
-        setConfigNodeDataType(event.target.value)
-        switch (event.target.value) {
-            default:
-            case 'text':
-                setNodeDataType(DataType.TEXT)
-                break;
-            case 'audio':
-                setNodeDataType(DataType.AUDIO)
-                break;
-            case 'image':
-                setNodeDataType(DataType.IMAGE)
-                break;
-            case 'pdf':
-                setNodeDataType(DataType.PDF)
-                break;
-            case 'url':
-                setNodeDataType(DataType.URL)
-                break;
-        }
-    };
-
-    const CONFIG_PROPS: { height: string, width: string } = {
-        height: '200px',
-        width: '200px',
-    }
-
-    // TODO: Styles
-    const CONFIG_SUBCOMPONENT: JSX.Element =
-        <>
-            <div>
-                This is the config window.
-            </div>
-            <div>
-                <label>
-                    Select an option:
-                    <select value={configNodeDataType} onChange={handleTypeChange}>
-                        <option value="text">text</option>
-                        <option value="audio">audio</option>
-                        <option value="image">image</option>
-                        <option value="pdf">pdf</option>
-                        <option value="url">url</option>
-                    </select>
-                </label>
-                <p>You selected: {configNodeDataType}</p>
-            </div>
-
-        </>;
-
-
-
     /*
     **  Putting it all together
     */
@@ -166,64 +89,41 @@ const DataNode = ({
         <>
             <NodeToolbar>
                 <button
-                    key='👁️'
+                    key='text-box'
                     onClick={() => {
-                        setIsConfigOpen(false);
-                        if (isDataHidden === true) {
-                            setIsDataHidden(false);
-                            setSubComponent(TYPED_SUBCOMPONENTS[nodeDataType]);
-                            setBaseNodeProps(TYPED_PROPS[nodeDataType])
-                        }
-                        else {
-                            setIsDataHidden(true);
-                            setSubComponent(HIDDEN_SUBCOMPONENT);
-                            setBaseNodeProps(HIDDEN_PROPS)
-                        }
+                        data.onDataChange(id, '', 'text')
+                        setInputType('text')
                     }}
                 >
-                    👁️
+                    T
                 </button>
                 <button
-                    key='⚙️'
+                    key='file'
                     onClick={() => {
-                        setIsDataHidden(false);
-                        if (isConfigOpen === true) {
-                            setIsConfigOpen(false);
-                            setSubComponent(TYPED_SUBCOMPONENTS[nodeDataType]);
-                            setBaseNodeProps(TYPED_PROPS[nodeDataType])
-                        }
-                        else {
-                            setIsConfigOpen(true);
-                            setSubComponent(CONFIG_SUBCOMPONENT);
-                            setBaseNodeProps(CONFIG_PROPS)
-                        }
+                        data.onDataChange(id, '', 'text')
+                        setInputType('file')
                     }}
                 >
-                    ⚙️
+                    F
                 </button>
-                <button>
+                <button
+                    key='gdrive'
+                    onClick={() => {
+                        data.onDataChange(id, '', 'text')
+                        setInputType('gdrive')
+                    }}
+                >
                     {GDRIVE_ICON}
                 </button>
             </NodeToolbar>
 
-            <BaseNode
-                id={id}
-                nodeName={data.nodeName}
-                subComponent={subComponent}
-                colors={{
-                    background: colors.background,
-                    border: colors.border,
-                }}
-                height={baseNodeProps.height}
-                width={baseNodeProps.width}
-                icon={DATABASE_ICON}
-            />
+            {renderInput()}
 
             <Handle
                 type="source"
                 id="o"
                 position={Position.Right}
-                isConnectable={isConnectable}
+                isConnectable={true}
                 style={{
                     height: 10,
                     width: 10,
