@@ -19,7 +19,6 @@ import { initialNodes, nodeTypes } from './nodes';
 import { initialEdges, edgeTypes } from './edges';
 import MinimalistNavbar from './MinimalistNavbar';
 import { type AppNode } from './nodes/types';
-import { DataType } from './old_nodes/types';
 import { stringConcat } from './nodes/TransformNode';
 
 let id = 1;
@@ -35,7 +34,7 @@ export default function App() {
 
     // Functions to create new nodes with default settings
     const addDataNode = useCallback(() => {
-        const newNode = {
+        const newNode: AppNode = {
             id: getID(), // Generate a unique ID
             type: 'data-input',
             position: { x: 0, y: 0 },
@@ -47,11 +46,11 @@ export default function App() {
     }, [setNodes]);
 
     const addAINode = useCallback(() => {
-        const newNode = {
+        const newNode: AppNode = {
             id: getID(), // Generate a unique ID
             type: 'data-input',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'DataNode', onDataChange: handleDataChange, rawData: '' },
+            data: { nodeName: 'DataNode', onDataChange: handleDataChange, rawData: '', dataType: 'text', opType: 'no-op' },
             selected: false,
             dragging: false,
         };
@@ -59,7 +58,7 @@ export default function App() {
     }, [setNodes]);
 
     const addTransformNode = useCallback(() => {
-        const newNode = {
+        const newNode: AppNode = {
             id: getID(), // Generate a unique ID
             type: 'transform',
             position: { x: 0, y: 0 },
@@ -71,7 +70,7 @@ export default function App() {
     }, [setNodes]);
 
     const addVizNode = useCallback(() => {
-        const newNode = {
+        const newNode: AppNode = {
             id: getID(), // Generate a unique ID
             type: 'viz',
             position: { x: 0, y: 0 },
@@ -83,7 +82,7 @@ export default function App() {
     }, [setNodes]);
 
     // Function to update the raw data in a specific node's data prop
-    const handleDataChange = (nodeId: string, newData: any, dataType: string) => {
+    const handleDataChange = async (nodeId: string, newData: any, dataType: string) => {
         setNodes((nds) =>
             nds.map((node) => {
                 if (node.id === nodeId) {
@@ -116,13 +115,13 @@ export default function App() {
         // order of operations is not ideal for visualization purposes, but perfectly functional overall
         if (stack.length == 0) {
             nodes.forEach((node) => {
-                if (node.type === 'transform' || node.type === 'ai-transform') {
+                if (node.type === 'transform') { // || node.type === 'ai-transform') {
                     stack.push(node.id);
                 }
             });
         }
 
-        const getDataByID = (id: string) => {
+        const getDataByID = (id: string): any => {
             const n = nodes.find((node) => node.id === id)
 
             if (!n) { return undefined; }
