@@ -12,12 +12,12 @@ const DataNode = ({ id, data }: NodeProps<DataNode>) => {
     const [inputType, setInputType] = useState('text');
 
     // Handler for the text input change.
-    const handleTextChange = (event) => {
+    const handleTextChange = (event: any) => {
         data.onDataChange(id, event.target.value, 'text');
     };
 
     // Handler for the local file input change.
-    const handleFileChange = (event) => {
+    const handleFileChange = (event: any) => {
         if (event.target.files && event.target.files[0]) {
             const allowedImgTypes = ["image/png", "image/jpeg", "image/gif"];
             const allowedTextTypes = ["text/plain", "text/markdown", "application/json", "text/csv"];
@@ -40,7 +40,7 @@ const DataNode = ({ id, data }: NodeProps<DataNode>) => {
                         value={data.rawData || ''} // Controlled component
                         onChange={handleTextChange}
                         placeholder="Enter text data..."
-                        className="border p-2 rounded w-full nodrag"
+                        className="border p-2 rounded w-full"
                     />
                 );
             case 'file': // TODO: read text file into text data
@@ -87,51 +87,53 @@ const DataNode = ({ id, data }: NodeProps<DataNode>) => {
 
     return (
         <>
-            <NodeToolbar>
-                <button
-                    key='text-box'
-                    onClick={() => {
-                        data.onDataChange(id, '', 'text')
-                        setInputType('text')
-                    }}
-                >
-                    T
-                </button>
-                <button
-                    key='file'
-                    onClick={() => {
-                        data.onDataChange(id, '', 'text')
-                        setInputType('file')
-                    }}
-                >
-                    F
-                </button>
-                <button
-                    key='gdrive'
-                    onClick={() => {
-                        data.onDataChange(id, '', 'text')
-                        setInputType('gdrive')
-                    }}
-                >
-                    {GDRIVE_ICON}
-                </button>
-            </NodeToolbar>
+            <div>
+                <NodeToolbar>
+                    <button
+                        key='text-box'
+                        onClick={() => {
+                            data.onDataChange(id, '', 'text')
+                            setInputType('text')
+                        }}
+                    >
+                        T
+                    </button>
+                    <button
+                        key='file'
+                        onClick={() => {
+                            data.onDataChange(id, '', 'text')
+                            setInputType('file')
+                        }}
+                    >
+                        F
+                    </button>
+                    <button
+                        key='gdrive'
+                        onClick={() => {
+                            data.onDataChange(id, '', 'text')
+                            setInputType('gdrive')
+                        }}
+                    >
+                        {GDRIVE_ICON}
+                    </button>
+                </NodeToolbar>
 
-            {renderInput()}
+                {renderInput()}
 
-            <Handle
-                type="source"
-                id="o"
-                position={Position.Right}
-                isConnectable={true}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "50%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
+                <Handle
+                    type="source"
+                    id="o"
+                    position={Position.Right}
+                    isConnectable={true}
+                    style={{
+                        height: 10,
+                        width: 10,
+                        top: "50%",
+                        border: `1px solid ${colors.border}`,
+                        background: colors.handle,
+                    }}
+                />
+            </div>
         </>
     )
 }
