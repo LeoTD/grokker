@@ -87,7 +87,7 @@ const DataNode = ({ id, data }: NodeProps<DataNode>) => {
 
     return (
         <>
-            <div>
+            <div className='base-node'>
                 <NodeToolbar>
                     <button
                         key='text-box'

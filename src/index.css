@@ -32,3 +32,16 @@ body,
 .react-flow__node-toolbar button:hover {
     background: #4d4d4d;
 }
+
+/* Base Node */
+
+.base-node {
+    background-color: #F1F3F4;
+    color: #333333;
+    border: #cccccc;
+    border-radius: 4px;
+    display: flex;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid #cccccc,
+}

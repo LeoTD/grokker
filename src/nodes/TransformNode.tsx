@@ -26,7 +26,7 @@ const TransformNode = ({ id, data }: NodeProps<TransformNode>) => {
             case 'string-concat':
                 return (
                     <div className="transform-node">
-                        <h3 className="font-bold">Concatenated Text Data:</h3>
+                        <h3 className="font-bold">Concatenated Text:</h3>
                         <p className="p-2 bg-gray-100 rounded break-words">{data.rawData}</p>
                     </div>
                 );
@@ -41,59 +41,61 @@ const TransformNode = ({ id, data }: NodeProps<TransformNode>) => {
 
     return (
         <>
-            <NodeToolbar>
-                <button
-                    key='string-concat'
-                    onClick={() => {
-                        data.onDataChange(id, '', 'text')
-                        setOpType('string-concat')
+            <div className='base-node'>
+                <NodeToolbar>
+                    <button
+                        key='string-concat'
+                        onClick={() => {
+                            data.onDataChange(id, '', 'text')
+                            data.opType = 'string-concat';
+                        }}
+                    >
+                        T
+                    </button>
+                </NodeToolbar>
+
+                {render()}
+
+                <Handle
+                    type="target"
+                    id="i0"
+                    position={Position.Left}
+                    isConnectable={true}
+                    style={{
+                        height: 10,
+                        width: 10,
+                        top: "75%",
+                        border: `1px solid ${colors.border}`,
+                        background: colors.handle,
                     }}
-                >
-                    T
-                </button>
-            </NodeToolbar>
-
-            {render()}
-
-            <Handle
-                type="target"
-                id="i0"
-                position={Position.Left}
-                isConnectable={true}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "75%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
-            <Handle
-                type="target"
-                id="i1"
-                position={Position.Left}
-                isConnectable={true}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "25%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
-            <Handle
-                type="source"
-                id="o"
-                position={Position.Right}
-                isConnectable={true}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "50%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
+                />
+                <Handle
+                    type="target"
+                    id="i1"
+                    position={Position.Left}
+                    isConnectable={true}
+                    style={{
+                        height: 10,
+                        width: 10,
+                        top: "25%",
+                        border: `1px solid ${colors.border}`,
+                        background: colors.handle,
+                    }}
+                />
+                <Handle
+                    type="source"
+                    id="o"
+                    position={Position.Right}
+                    isConnectable={true}
+                    style={{
+                        height: 10,
+                        width: 10,
+                        top: "50%",
+                        border: `1px solid ${colors.border}`,
+                        background: colors.handle,
+                    }}
+                />
+            </div>
         </>
     )
 }

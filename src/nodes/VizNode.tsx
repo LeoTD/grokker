@@ -52,7 +52,7 @@ const VizNode = ({ id, data }: NodeProps<VizNode>) => {
                 }
                 return (
                     <div className="viz-node">
-                        <h3 className="font-bold">Stored Text Data:</h3>
+                        <h3 className="font-bold">Stored Text:</h3>
                         <p className="p-2 bg-gray-100 rounded break-words">{data.rawData}</p>
                     </div>
                 );
@@ -102,24 +102,26 @@ const VizNode = ({ id, data }: NodeProps<VizNode>) => {
 
     return (
         <>
-            <NodeToolbar>
-            </NodeToolbar>
+            <div className='base-node'>
+                <NodeToolbar>
+                </NodeToolbar>
 
-            {renderViz()}
+                {renderViz()}
 
-            <Handle
-                type="target"
-                id="i0"
-                position={Position.Left}
-                isConnectable={true}
-                style={{
-                    height: 10,
-                    width: 10,
-                    top: "50%",
-                    border: `1px solid ${colors.border}`,
-                    background: colors.handle,
-                }}
-            />
+                <Handle
+                    type="target"
+                    id="i0"
+                    position={Position.Left}
+                    isConnectable={true}
+                    style={{
+                        height: 10,
+                        width: 10,
+                        top: "50%",
+                        border: `1px solid ${colors.border}`,
+                        background: colors.handle,
+                    }}
+                />
+            </div>
         </>
     )
 }
