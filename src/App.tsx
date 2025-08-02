@@ -50,7 +50,7 @@ export default function App() {
             id: getID(), // Generate a unique ID
             type: 'data-input',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'DataNode', onDataChange: handleDataChange, rawData: '', dataType: 'text', opType: 'no-op' },
+            data: { nodeName: 'DataNode', onDataChange: handleDataChange, rawData: 'default text', dataType: 'text', opType: 'no-op' },
             selected: false,
             dragging: false,
         };
@@ -74,7 +74,7 @@ export default function App() {
             id: getID(), // Generate a unique ID
             type: 'viz',
             position: { x: 0, y: 0 },
-            data: { nodeName: 'Viz', onDataChange: handleDataChange, rawData: 'Hello World', dataType: 'text', opType: 'no-op' },
+            data: { nodeName: 'Viz', onDataChange: handleDataChange, rawData: 'default text', dataType: 'text', opType: 'no-op' },
             selected: false,
             dragging: false,
         };
@@ -82,7 +82,7 @@ export default function App() {
     }, [setNodes]);
 
     // Function to update the raw data in a specific node's data prop
-    const handleDataChange = async (nodeId: string, newData: any, dataType: string) => {
+    const handleDataChange = (nodeId: string, newData: any, dataType: string) => {
         setNodes((nds) =>
             nds.map((node) => {
                 if (node.id === nodeId) {
@@ -103,6 +103,7 @@ export default function App() {
 
     // Function to update raw data values accross all nodes
     const updateAll = () => {
+        console.log("updating...");
         const visited = new Set();
         let stack: string[] = [];
         nodes.forEach((node) => {
@@ -205,11 +206,3 @@ export default function App() {
         </ReactFlow>
     );
 }
-
-/*
-
-            <Panel>
-                <button onClick={() => ExecuteGraph()}>Execute</button>
-            </Panel>
-
-*/

@@ -26,8 +26,8 @@ const TransformNode = ({ id, data }: NodeProps<TransformNode>) => {
             case 'string-concat':
                 return (
                     <div className="transform-node">
-                        <h3 className="font-bold">Concatenated Text:</h3>
-                        <p className="p-2 bg-gray-100 rounded break-words">{data.rawData}</p>
+                        <h3>Concatenated Text:</h3>
+                        <p>{data.rawData}</p>
                     </div>
                 );
             default:
