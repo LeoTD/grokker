@@ -2,10 +2,12 @@
 
 import torch
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 # 1. Initialize Flask App
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:5173"])
 
 # 2. Load Model and Tokenizer
 # Set the model name for Gemma's instruction-tuned 2B version
@@ -47,6 +49,9 @@ def generate():
             return jsonify({"error": "Bad Request: 'prompt' key not found in JSON payload."}), 400
 
         prompt_text = data['prompt']
+
+        print(prompt_text)
+
         # Set a default for max_new_tokens if not provided
         max_new_tokens = data.get('max_new_tokens', 250)
 
