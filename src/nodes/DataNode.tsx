@@ -35,13 +35,16 @@ const DataNode = ({ id, data }: NodeProps<DataNode>) => {
         switch (inputType) {
             case 'text':
                 return (
-                    <input
-                        type="text"
-                        value={data.rawData || ''} // Controlled component
-                        onChange={handleTextChange}
-                        placeholder="Enter text data..."
-                        className="border p-2 rounded w-full"
-                    />
+                    <form>
+                        <textarea
+                            id="text-input"
+                            name="text-input"
+                            value={data.rawData}
+                            onChange={handleTextChange}
+                            rows={6}
+                            cols={30}
+                        />
+                    </form>
                 );
             case 'file': // TODO: read text file into text data
                 return (
