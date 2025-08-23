@@ -114,6 +114,7 @@ export default function App() {
                 },
                 body: JSON.stringify({
                     prompt: prompt,
+                    max_new_tokens: 500,
                 })
             });
 
